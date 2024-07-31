@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function SearchBar(props) {
   const [jobCriteria, setJobCriteria] = useState({
@@ -8,8 +8,18 @@ function SearchBar(props) {
     type: ""
   });
 
+  useEffect(() => {
+    if (props.clearFields) {
+      setJobCriteria({
+        title: "",
+        location: "",
+        experience: "",
+        type: ""
+      });
+    }
+  }, [props.clearFields]);
+
   const handleChange = (e) => {
-    console.log(`Updating jobCriteria state: ${e.target.name} = ${e.target.value}`);
     setJobCriteria((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value
@@ -17,11 +27,8 @@ function SearchBar(props) {
   };
 
   const handleSearch = async () => {
-    console.log("Calling handleSearch function");
-    console.log("jobCriteria state:", jobCriteria);
     try {
-      const response = await props.fetchJobsCustom(jobCriteria);
-      console.log("Response from API:", response);
+      await props.fetchJobsCustom(jobCriteria);
     } catch (error) {
       console.error("Error fetching jobs:", error);
     }
